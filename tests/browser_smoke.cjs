@@ -22,7 +22,7 @@ const assert=require('node:assert/strict');
         const job=String(++fixture.next);let result={},error;
         if(url.pathname==='/api/discover')result={candidates:fixture.candidates};
         if(url.pathname==='/api/connect'){if(fixture.failConnect)error={message:'请打开企业微信并登录后继续。',action:'请保持企业微信后台运行后重试。'};else result={rooms:fixture.empty?[]:rooms,database:body.path};}
-        if(url.pathname==='/api/export'){assert.equal(body.room_id,rooms[0].room_id);result={id:'synthetic-export',title:rooms[0].title,passages:2,elapsed:.32,markdown:'sample-transcript.md',json:'sample-transcript.json',warnings:['部分成员姓名缺失，已使用固定的成员编号标注。'],preview:[{speaker:'发言人1',time:'2026-10-19 10:00:00',text:'这是原始转录的演示文本。\nA second line stays intact.'},{speaker:'成员1',time:'2026-10-19 10:00:04',text:'<script>window.untrustedExecuted=true</script>'}],preview_truncated:false};}
+        if(url.pathname==='/api/export'){assert.equal(body.room_id,rooms[0].room_id);assert.equal(body.resolve_speakers,true);result={id:'synthetic-export',title:rooms[0].title,passages:2,elapsed:.32,markdown:'sample-transcript.md',json:'sample-transcript.json',warnings:['部分成员姓名缺失，已使用固定的成员编号标注。'],preview:[{speaker:'发言人1',time:'2026-10-19 10:00:00',text:'这是原始转录的演示文本。\nA second line stays intact.'},{speaker:'成员1',time:'2026-10-19 10:00:04',text:'<script>window.untrustedExecuted=true</script>'}],preview_truncated:false};}
         fixture.jobs[job]=error?{state:'error',error}:{state:'done',result};response={job};status=202;
       }
       await route.fulfill({status,contentType:'application/json',body:JSON.stringify(response)});
@@ -35,7 +35,7 @@ const assert=require('node:assert/strict');
     assert.equal(await page.locator('#connect').isEnabled(),true);fixture.failConnect=false;
     await page.locator('#connect').click();await page.locator('.recording').first().waitFor();
     await page.locator('#recording-filter').fill('not a title');assert.equal(await page.locator('.recording').count(),0);
-    await page.locator('#recording-filter').fill('');await page.locator('.recording').first().click();await page.locator('#export').click();await page.getByText('转录原文已保存',{exact:true}).waitFor();
+    await page.locator('#recording-filter').fill('');await page.locator('.recording').first().click();assert.equal(await page.locator('#resolve-speakers').isChecked(),false);await page.locator('#resolve-speakers').check();await page.locator('#export').click();await page.getByText('转录原文已保存',{exact:true}).waitFor();
     assert.equal(await page.locator('.utterance').count(),2);assert.equal(await page.evaluate(()=>window.untrustedExecuted),undefined);
     await page.screenshot({path:'.ui-test/export-desktop.png',fullPage:true});
     const chinese=page.locator('.utterance p').first();const fonts=await page.context().newCDPSession(page);await fonts.send('DOM.enable');await fonts.send('CSS.enable');const doc=await fonts.send('DOM.getDocument');const node=await fonts.send('DOM.querySelector',{nodeId:doc.root.nodeId,selector:'.utterance p'});const evidence=await fonts.send('CSS.getPlatformFontsForNode',{nodeId:node.nodeId});

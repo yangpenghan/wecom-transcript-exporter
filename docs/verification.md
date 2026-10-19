@@ -1,5 +1,13 @@
 # Verification history
 
+## v1.3.0 — Optional local speaker names
+
+The selected recording's four unresolved member IDs each matched exactly one name in the current account's local contact cache. The production service exported all 347 passages with those names; every non-speaker record field and each existing native name stayed unchanged. Initial contact access plus export took 10.271 seconds in this test; later checks reuse the protected contact key. Names, IDs, contact data and the verified private export remain outside Git.
+
+45 synthetic Python tests ran: 44 passed and one POSIX-only test was skipped. Coverage includes exact account selection, malformed/duplicate identity, large IDs, conflicting names, ID-limited queries, no default contact access, original text/native-name preservation, optional-failure fallback and revocation of both keys. Review found and fixed cleanup of interrupted decryption staging files; a regression test verifies cleanup for dead processes while preserving active snapshots. The browser journey passed with the option initially unchecked, explicitly selected before export and sent as a boolean to the service; desktop/narrow layouts remained within the viewport.
+
+The packaged v1.3.0 Windows executable also exported the same recording through the real browser interface: 347 passages, four resolved names, exact record equality with the independently verified service export, and zero external browser requests. The application exited successfully from its interface.
+
 ## v1.2.0 — Simplified Chinese interface
 
 This independent distribution repository was initialized from the audited source allowlist. Runtime code and UI match the tested development build; the portable guide points to this repository's Releases page. No development Git objects or user state were copied.

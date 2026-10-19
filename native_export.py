@@ -53,6 +53,8 @@ def powershell(args, timeout):
 
 
 def database_key(database, state):
+    if database.name not in ('voice_room5.db', 'user.db'):
+        raise ValueError('Unsupported database for local key check')
     with database.open('rb') as stream:
         page = stream.read(4096)
     key_file = state / 'voice-room-key.dpapi'
@@ -116,6 +118,7 @@ def main(argv=None):
     parser.add_argument('--title', help='Exact title from the local session list')
     parser.add_argument('--list', action='store_true', help='Show cached face-to-face sessions without exporting')
     parser.add_argument('--output', type=Path, help='Markdown destination; existing files are not overwritten')
+    parser.add_argument('--resolve-names', action='store_true', help='Resolve missing speaker names from this account\'s local contact cache')
     parser.add_argument('--speaker-map', type=Path, help='Optional JSON mapping of sender IDs to display names')
     args = parser.parse_args(argv)
     began = time.perf_counter()
@@ -153,6 +156,13 @@ def main(argv=None):
                     raise ValueError('Session number is out of range')
                 room = rooms[index - 1]
             result = extract_room(conn, room['room_id'], aliases)
+            if args.resolve_names:
+                from native_contacts import resolve_names
+                names, report = resolve_names(database, state, result['unresolved_speakers'], lambda message: print(message, flush=True))
+                if names:
+                    combined = {**names, **aliases}
+                    result = extract_room(conn, room['room_id'], combined)
+                result['speaker_resolution'] = report
         finally:
             conn.close()
     # All plaintext database snapshots are removed before publishing the selected transcript.

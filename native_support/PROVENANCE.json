@@ -32,9 +32,10 @@
       "stop after first validated candidate",
       "no privilege adjustment or process writes",
       "DPAPI key storage; no key output",
-      "Validate current Windows owner SID and session before scanning"
+      "Validate current Windows owner SID and session before scanning",
+      "Allow current-account user.db for explicit opt-in speaker-name resolution, with a separate protected key state"
     ],
-    "local_sha256": "3c34f09af7476108ae6f33e524e39f7661df2f44e0f8d942274c16b5c94209b2"
+    "local_sha256": "30fc01d75f3de62be2c9896162cd6abfc536bbfd9be202c7bcc86717eec55353"
   },
   {
     "file": "../tests/test_native_wal.py",

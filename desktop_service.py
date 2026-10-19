@@ -71,7 +71,7 @@ def clean_abandoned_snapshots(state):
             continue
         try:
             for file in directory.iterdir():
-                if file.name == 'voice-room.db' or (file.name.startswith('.wecom-') and file.suffix == '.tmp'):
+                if file.name == 'voice-room.db' or (file.name.startswith('.wecom-') and file.suffix in ('.tmp', '.db')):
                     if file.is_file() and not file.is_symlink():
                         file.unlink()
             directory.rmdir()
@@ -193,13 +193,20 @@ class NativeEngine:
         with self.snapshot(database, state, progress) as conn:
             return room_catalog(conn)
 
-    def extract(self, database, state, room_id, progress):
+    def extract(self, database, state, room_id, progress, resolve_speakers=False):
         from native_transcript import extract_room, room_catalog
         with self.snapshot(database, state, progress) as conn:
             room = next((r for r in room_catalog(conn) if str(r['room_id']) == room_id), None)
             if room is None:
                 raise UserError('recording_moved', '所选缓存中已找不到这条面聊记录。', '请刷新列表后重新选择记录。')
-            return room['title'], extract_room(conn, int(room_id))
+            result = extract_room(conn, int(room_id))
+            if resolve_speakers:
+                from native_contacts import resolve_names
+                names, report = resolve_names(database, state, result['unresolved_speakers'], progress)
+                if names:
+                    result = extract_room(conn, int(room_id), names)
+                result['speaker_resolution'] = report
+            return room['title'], result
 
 
 class DesktopService:
@@ -272,7 +279,7 @@ class DesktopService:
         self.save()
         return {'revoked': True}
 
-    def export(self, room_id, destination, progress):
+    def export(self, room_id, destination, progress, resolve_speakers=False):
         if not self.database or not any(r['room_id'] == room_id for r in self.rooms):
             raise UserError('choose_recording', '请从当前列表中选择一条面聊记录。', '请连接数据库后选择面聊记录。')
         folder = Path(destination).expanduser()
@@ -283,7 +290,8 @@ class DesktopService:
         with tempfile.TemporaryFile(dir=folder):
             pass
         began = time.perf_counter()
-        title, result = self.engine.extract(self.database, self.profile_state(self.database), room_id, progress)
+        options = {'resolve_speakers': True} if resolve_speakers else {}
+        title, result = self.engine.extract(self.database, self.profile_state(self.database), room_id, progress, **options)
         progress('正在保存 Markdown 和 JSON……')
         from native_support.local_io import atomic_output
         from native_transcript import render_markdown
@@ -302,6 +310,8 @@ class DesktopService:
         self.config['output_folder'] = str(folder)
         self.save()
         warnings = []
+        if result.get('speaker_resolution', {}).get('status') == 'unavailable':
+            warnings.append('本地通讯录暂时无法读取，已保留原成员编号。请确认企业微信仍已登录；复制或迁移过的数据可能缺少账号信息。')
         if result['missing_id_ranges']:
             warnings.append('本地缓存中存在消息编号缺口。请在企业微信中重新打开记录并刷新，确认内容是否完整。')
         if not result['last_segment_ended']:
@@ -312,7 +322,8 @@ class DesktopService:
             warnings.append(f"{result['excluded_nonzero_state']} 条非零状态文本记录已排除，详情请查看 JSON 报告。")
         return dict(id=export_id, title=title, passages=len(result['records']), elapsed=result['elapsed_seconds'],
                     folder=str(folder), markdown=md.name, json=js.name, warnings=warnings,
-                    preview=result['records'][:30], preview_truncated=len(result['records']) > 30)
+                    preview=result['records'][:30], preview_truncated=len(result['records']) > 30,
+                    speaker_resolution=result.get('speaker_resolution', {'status': 'not_requested', 'resolved': 0}))
 
     def output_file(self, export_id, kind):
         path = self.outputs.get(export_id, {}).get(kind)

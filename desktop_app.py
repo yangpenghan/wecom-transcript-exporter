@@ -200,7 +200,7 @@ class LocalHandler(BaseHTTPRequestHandler):
                 '/api/discover': lambda p: service.discover(str(data.get('root', ''))),
                 '/api/browse': lambda p: choose_location(data.get('kind')),
                 '/api/connect': lambda p: service.connect(str(data.get('path', '')), data.get('consent') is True, p),
-                '/api/export': lambda p: service.export(str(data.get('room_id', '')), str(data.get('folder', '')), p),
+                '/api/export': lambda p: service.export(str(data.get('room_id', '')), str(data.get('folder', '')), p, resolve_speakers=data.get('resolve_speakers') is True),
                 '/api/revoke': lambda p: service.revoke(),
             }
             if path in operations:

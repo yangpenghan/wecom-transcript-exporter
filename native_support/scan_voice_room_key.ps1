@@ -120,7 +120,7 @@ if ($owner.ReturnValue -ne 0 -or $owner.Sid -ne $currentSid -or $targetInfo.Sess
     throw 'Expected WeCom owned by the current Windows user in the current session'
 }
 $db = (Resolve-Path -LiteralPath $Database).Path
-if ([IO.Path]::GetFileName($db) -ne 'voice_room5.db') { throw 'Expected voice_room5.db' }
+if ([IO.Path]::GetFileName($db) -notin @('voice_room5.db','user.db')) { throw 'Expected voice_room5.db or user.db' }
 $header=New-Object byte[] 4096
 $stream=[IO.File]::Open($db,'Open','Read','ReadWrite')
 try { if ($stream.Read($header,0,4096) -ne 4096) { throw 'Incomplete page' } } finally { $stream.Close() }

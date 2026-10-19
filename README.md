@@ -11,6 +11,8 @@
 3. 登录自己的企业微信账号，自动查找数据；也可选择文件、文件夹或手动填写位置。
 4. 允许本地读取，选择面聊记录及保存位置，点击**导出转录原文**。
 
+如果原文显示“成员 N”，导出前勾选 **使用本地通讯录补全成员姓名**。应用按这条面聊的成员 ID 精确匹配当前账号的本地姓名，不按内容猜人，也不上传通讯录。首次需要单独检查通讯录密钥，可能约一分钟；已有原始姓名不会被覆盖。失败时仍导出原文，并保留成员编号。复制或迁移过的数据库若缺少原账号信息，可能无法补全。
+
 ![中文界面，使用虚构的账号路径](docs/images/interface.png)
 
 无需企业 API 密钥或管理员令牌。首次连接会在征得同意后检查当前用户的企业微信进程，验证数据库密钥，并由 Windows 加密保存。应用不请求管理员权限；组织策略可能阻止读取。
@@ -36,6 +38,9 @@
 # 按完整且唯一的标题导出
 .\.venv\Scripts\python.exe native_export.py --title '示例面聊标题'
 
+# 可选：按当前账号的本地通讯录补全成员姓名
+.\.venv\Scripts\python.exe native_export.py --title '示例面聊标题' --resolve-names
+
 # 指定导出位置，不覆盖已有文件
 .\.venv\Scripts\python.exe native_export.py --title '示例面聊标题' --output 'exports/recording.md'
 
@@ -54,6 +59,7 @@
 | `web/` | 中文界面与离线资源 |
 | `native_export.py` | 命令行及本地数据库流程 |
 | `native_transcript.py` | 原文解码与 Markdown 生成 |
+| `native_contacts.py` | 可选的当前账号成员 ID 到姓名匹配 |
 | `native_support/` | 加密、WAL、密钥读取辅助代码及来源 |
 | `scripts/build_portable.py` | Windows 发布包构建 |
 | `tests/` | 合成数据单元测试与浏览器测试 |
