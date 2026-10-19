@@ -1,0 +1,29 @@
+# Local environments and downloaded runtimes
+.venv/
+runtime/
+models/
+__pycache__/
+*.py[cod]
+
+# Private recordings, diagnostics, and Windows-protected key state
+exports/
+diagnostics/
+.native-state/
+*.dpapi
+*.db
+*.db-wal
+*.db-shm
+.env
+.env.*
+
+# Local development tooling and temporary cleanup work
+.serena/
+.spec-workflow/
+.cleanup-work/
+.export.lock
+.local-archive/
+
+build/
+dist/
+.ui-test/
+node_modules/

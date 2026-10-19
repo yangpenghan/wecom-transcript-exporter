@@ -1,0 +1,48 @@
+[
+  {
+    "file": "wxwork_crypto.py",
+    "source": "https://github.com/freanocank/wecom-agent/blob/main/decrypt/wxwork_crypto.py",
+    "sha256": "40aa9a371fdd679b4fdf92a987a080ed10f16dc4376557beac59b7535be4b607",
+    "local_sha256": "40aa9a371fdd679b4fdf92a987a080ed10f16dc4376557beac59b7535be4b607"
+  },
+  {
+    "file": "wal_snapshot.py",
+    "source": "https://github.com/freanocank/wecom-agent/blob/main/decrypt/wal_snapshot.py",
+    "sha256": "c640045326be19be1a1763066f7d6958346baf7ff45bc49287f9b9bf9a6885a0",
+    "local_sha256": "6eb67537f8ecb7a6a4743076168da81260ecc70c1e6ff9ce84afb12b9ab13393",
+    "adaptations": [
+      "Compare two full reads of main/WAL contents in opposite order as well as metadata; bounded retries"
+    ]
+  },
+  {
+    "file": "local_io.py",
+    "source": "https://github.com/freanocank/wecom-agent/blob/main/decrypt/local_io.py",
+    "sha256": "33f7d46a49dda69fa2aa0f0c346eb209b872f85faaf212d48293715022d8a971",
+    "local_sha256": "4adfd282aa3baf06e3b0fb175b9e23b15fcbbeefe61b874d15d626fc9bd951bb",
+    "adaptations": [
+      "Optional atomic no-clobber publication via same-directory hard link"
+    ]
+  },
+  {
+    "file": "scan_voice_room_key.ps1",
+    "source": "https://github.com/freanocank/wecom-agent/blob/main/decrypt/windows/find_key.ps1",
+    "adaptations": [
+      "single explicitly chosen WXWork PID and voice_room5.db",
+      "40-second deadline",
+      "stop after first validated candidate",
+      "no privilege adjustment or process writes",
+      "DPAPI key storage; no key output",
+      "Validate current Windows owner SID and session before scanning"
+    ],
+    "local_sha256": "3c34f09af7476108ae6f33e524e39f7661df2f44e0f8d942274c16b5c94209b2"
+  },
+  {
+    "file": "../tests/test_native_wal.py",
+    "source": "https://github.com/freanocank/wecom-agent/blob/main/tests/test_wal_snapshot.py",
+    "sha256": "3abdf11470cc2bc9f67271f1eb7fa261ae5b928df4afd3c18c0bd8e42348f1e0",
+    "local_sha256": "6a70a574f96d688a484e9ea57247b8b8f12f67e9e35e6b386d3178916b892821",
+    "adaptations": [
+      "Imports use native_support; original MIT attribution retained"
+    ]
+  }
+]

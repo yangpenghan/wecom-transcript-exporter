@@ -1,0 +1,21 @@
+WeCom Transcript Exporter
+Copyright 2026 Will Yang (yangpenghan)
+
+Original project code is licensed under the Apache License, Version 2.0.
+This independent utility is not affiliated with or endorsed by WeCom or Tencent.
+
+Database, WAL, local I/O and process-key helpers include adaptations from
+freanocank/wecom-agent, copyright (c) 2026 tzwkb, under the MIT License.
+See native_support/LICENSE.wecom-agent in the source distribution and
+licenses/LICENSE.wecom-agent in the portable distribution.
+
+IBM Plex Sans, Noto Sans SC and the font used for the personal seal retain
+their respective SIL Open Font License notices in web/will-assets/personal
+(under _internal/web in the portable distribution).
+
+Will Yang's personal marks identify this project. The Apache license does
+not grant permission to imply endorsement or use trademarks beyond the
+license's attribution provisions.
+
+Additional dependency notices appear in THIRD_PARTY_NOTICES.md and in
+the portable distribution's licenses directory.

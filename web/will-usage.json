@@ -1,0 +1,91 @@
+{
+  "version": "4.1.0",
+  "marks": {
+    "english": "will-assets/personal/logos/open-inference.svg",
+    "chinese": "will-assets/personal/logos/han-seal.svg",
+    "rule": "Use separately; never merge or add Chinese cutouts."
+  },
+  "mode": "personal",
+  "profile": "web",
+  "adapter": "scoped",
+  "iconFamily": "structures",
+  "iconTier": "compact",
+  "iconTreatment": "color",
+  "icons": [
+    {
+      "id": "evidence",
+      "label": "证据",
+      "family": "structures",
+      "path": "will-assets/personal/icons/families/structures/compact/color/evidence.svg"
+    }
+  ],
+  "overrides": [
+    "Compact application header uses 25px heading on desktop and 21px on mobile; section headings use 30px/26px. Dense controls and transcript preview use 14–16px for a desktop utility."
+  ],
+  "files": [
+    {
+      "path": "will-assets/personal/will-roles.css",
+      "sha256": "cf70979bb358399f8ec235fd83aa7632519889d3bbbb4aabfe814582266f6324"
+    },
+    {
+      "path": "will-assets/personal/will-tokens.css",
+      "sha256": "cd4f393c76a0c0b882aeb566cb3494c080b8a1265ea66a4be32d45b077d3fb39"
+    },
+    {
+      "path": "will-assets/personal/fonts/technical/IBMPlexSans.woff2",
+      "sha256": "e69427cdfe81d4d038f4dc94446f52e777fee3af722dba5b22acdd47cfd2f9b7"
+    },
+    {
+      "path": "will-assets/personal/fonts/technical/NotoSansSC.woff2",
+      "sha256": "3ddfdcc1d677923ee082f69686fae864ef34f5e5b4fdd8b3be82e4d69f573617"
+    },
+    {
+      "path": "will-assets/personal/fonts/technical/IBMPlexSans-OFL.txt",
+      "sha256": "37784b44044a4ffd9256702b7c0982c37e5c8887ba90c6dca0479aea93dc898d"
+    },
+    {
+      "path": "will-assets/personal/fonts/technical/NotoSansSC-OFL.txt",
+      "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9"
+    },
+    {
+      "path": "will-assets/personal/logos/open-inference.svg",
+      "sha256": "8d635d372a643054bec5c5cb750d8d66201810cccd8485e0f3e5290077115367"
+    },
+    {
+      "path": "will-assets/personal/logos/han-seal.svg",
+      "sha256": "c8950c9adeb0e9f63fa842898deeedb094d2ae4e805fed308d5cdc13d563b8d7"
+    },
+    {
+      "path": "will-assets/personal/logos/open-inference-ink.svg",
+      "sha256": "1dafa89781fc16f2737b22c64746d993ae4233f1345339f54976c4e277a0064a"
+    },
+    {
+      "path": "will-assets/personal/logos/open-inference-white.svg",
+      "sha256": "8c90bec2c737b5f2c3b0a2d7928ad7df20efaec8f9569f70db80be64dc148cd2"
+    },
+    {
+      "path": "will-assets/personal/logos/han-seal-ink.svg",
+      "sha256": "2107ffd1a3a569ce20f5db75b767d0acc8aa671fc667d866d084f88c5708132e"
+    },
+    {
+      "path": "will-assets/personal/logos/han-seal-white.svg",
+      "sha256": "b278dc81a848036823ad12de2e164c1bf7447e1d6cf280a89bf898c3b7bb1cb2"
+    },
+    {
+      "path": "will-assets/personal/licenses/LiuJianMaoCao-OFL.txt",
+      "sha256": "ff56684b0212481e7c3886c26d5a655de9b211c8119e5ccc756138a97b066acc"
+    },
+    {
+      "path": "will-assets/personal/icons/families/structures/compact/color/evidence.svg",
+      "sha256": "044ea6a3121a16e850afeede485fd5122d360da4071d5fb13222cd50d08e9d55"
+    },
+    {
+      "path": "will-assets/adapter.css",
+      "sha256": "58f547651538c9c6458d04dc633f967c568b538a843e2ea01890a4e64a403875"
+    },
+    {
+      "path": "will-assets/personal/logos/favicon.svg",
+      "sha256": "2fdae12fc20a62cbc6ba9dd44c7afbb9ed7cac1e5ad18155f469a0d0c093924d"
+    }
+  ]
+}

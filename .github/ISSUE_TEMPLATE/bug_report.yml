@@ -1,0 +1,24 @@
+name: 问题反馈
+description: 提交已脱敏的复现步骤
+body:
+  - type: markdown
+    attributes:
+      value: 请勿上传数据库、密钥、真实面聊记录、账号标识或私人路径。安全漏洞请查看 SECURITY.md。
+  - type: input
+    id: versions
+    attributes:
+      label: 版本信息
+      description: Windows、企业微信和导出工具版本
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤和预期结果
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: 已脱敏的错误提示
+      description: 删除姓名、文件路径、记录标题及其他私人信息后填写。
