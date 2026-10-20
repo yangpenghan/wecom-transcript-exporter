@@ -11,3 +11,9 @@ Runtime dependencies are installed separately from `requirements-lock.txt`: `cry
 The HTML interface includes Will Yang's personal design assets and locally bundled IBM Plex Sans / Noto Sans SC fonts. Font and seal notices are retained under `web/will-assets/personal/`. `web/will-usage.json` records asset hashes and the design-token version.
 
 Portable releases bundle Python, cryptography and their required binary components using PyInstaller. Runtime and packaging license notices are copied into the release's `licenses/` directory and the bundled dependency metadata.
+
+## Local meeting cache reader
+
+`dfindexeddb/` contains an unmodified minimal LevelDB parser subset from Google's [dfindexeddb](https://github.com/google/dfindexeddb), PyPI release `20260210`, under Apache-2.0. The upstream copyright headers, `dfindexeddb/LICENSE`, and file hashes in `dfindexeddb/PROVENANCE.json` are retained. IndexedDB and CLI modules are not included. Project-owned integrity checks wrap this parser.
+
+Additional pinned runtime dependencies: python-snappy 0.7.3 (BSD), cramjam 2.14.0 (MIT, with bundled codec notices), zstd 1.5.7.2 (BSD), and google-crc32c 1.9.0 (Apache-2.0). Their distribution license files are copied into portable releases. Newer Windows-compatible compression packages are used instead of the upstream package's older exact dependency pins; the selected reader subset is tested against these versions. Zstandard SST blocks are currently rejected by the bounded reader; zstd remains required by the vendored module import.

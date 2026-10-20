@@ -71,7 +71,9 @@ def clean_abandoned_snapshots(state):
             continue
         try:
             for file in directory.iterdir():
-                if file.name == 'voice-room.db' or (file.name.startswith('.wecom-') and file.suffix in ('.tmp', '.db')):
+                if (file.name == 'voice-room.db'
+                        or re.fullmatch(r'CURRENT|MANIFEST-\d+|\d+\.(ldb|log)', file.name)
+                        or (file.name.startswith('.wecom-') and file.suffix in ('.tmp', '.db'))):
                     if file.is_file() and not file.is_symlink():
                         file.unlink()
             directory.rmdir()
@@ -106,7 +108,23 @@ def validate_database_path(value):
     return path
 
 
-def discover_databases(roots, max_directories=2500, max_depth=6):
+def validate_meeting_profile(value):
+    path = Path(str(value).strip().strip('"')).expanduser()
+    if str(path).startswith(('\\\\', '//')):
+        raise UserError('local_database_required', '请选择本机上的账号资料。')
+    try:
+        if path.name.lower() not in ('io_data.json', 'voice_room5.db'):
+            raise ValueError('Wrong profile anchor')
+        path = path.resolve(strict=True)
+        if not path.is_file() or path.parent.parent.name.casefold() != 'profiles':
+            raise ValueError('Wrong profile layout')
+        return path
+    except (OSError, ValueError):
+        raise UserError('meeting_profile_missing', '所选位置不是可读取的企业微信账号资料。',
+                        '请自动查找，或选择 Profiles 下当前账号目录中的 io_data.json；不需要面聊数据库。') from None
+
+
+def discover_databases(roots, max_directories=2500, max_depth=6, source='facechat'):
     found, seen = {}, set()
     queue = deque((Path(p).expanduser(), 0) for p in roots)
     scanned, errors, entries = 0, 0, 0
@@ -123,7 +141,10 @@ def discover_databases(roots, max_directories=2500, max_depth=6):
             if resolved in seen:
                 continue
             seen.add(resolved)
-            direct = path if path.name.lower() == 'voice_room5.db' else path / 'voice_room5.db'
+            anchor = 'io_data.json' if source == 'meeting' else 'voice_room5.db'
+            direct = path if path.name.lower() == anchor else path / anchor
+            if source == 'meeting' and path.name.lower() == 'voice_room5.db':
+                direct = path.with_name(anchor)
             if direct.is_file():
                 info = direct.stat()
                 absolute = str(direct.resolve())
@@ -222,6 +243,8 @@ class DesktopService:
         except (OSError, ValueError):
             self.config = {}
         self.engine = engine or NativeEngine()
+        self.source = 'facechat'
+        self.active_engine = self.engine
         self.roots = list(roots) if roots is not None else default_roots()
         self.database, self.rooms, self.outputs = None, [], {}
 
@@ -241,33 +264,40 @@ class DesktopService:
                     consented_databases=self.config.get('consented_databases', []),
                     tested_version='5.0.12.6018')
 
-    def discover(self, root=''):
+    def discover(self, root='', source='facechat'):
+        if source not in ('facechat', 'meeting'):
+            raise UserError('invalid_source', '请选择支持的记录类型。')
         roots = [root] if root else self.roots + ([self.config['database']] if self.config.get('database') else [])
         if root and not Path(root).exists():
             raise UserError('location_missing', '此位置不存在。', '请选择文件夹，或粘贴完整的本地路径。')
         if root and str(root).startswith(('\\\\', '//')):
             raise UserError('local_database_required', '请在本机文件夹中查找。', '请选择企业微信的本地存储文件夹。')
-        return discover_databases(roots)
+        return discover_databases(roots, source=source)
 
     def profile_state(self, database):
         folder = self.state / 'profiles' / hashlib.sha256(str(database).encode()).hexdigest()[:16]
         folder.mkdir(parents=True, exist_ok=True)
         return folder
 
-    def connect(self, path, consent, progress):
+    def connect(self, path, consent, progress, source='facechat'):
         self.database, self.rooms = None, []
-        database = validate_database_path(path)
+        if source not in ('facechat', 'meeting'):
+            raise UserError('invalid_source', '请选择支持的记录类型。')
+        from native_meetings import MeetingEngine
+        engine = MeetingEngine() if source == 'meeting' else self.engine
+        database = validate_meeting_profile(path) if source == 'meeting' else validate_database_path(path)
         if not (consent is True or self.has_consent(str(database))):
             raise UserError('consent_required', '连接前，请先允许读取本地数据。', '请阅读授权说明并勾选同意，无需企业接口授权。')
-        rooms = self.engine.catalog(database, self.profile_state(database), progress)
+        rooms = engine.catalog(database, self.profile_state(database), progress)
         # Native room IDs exceed JavaScript's safe integer range.
         self.rooms = [dict(room, room_id=str(room['room_id'])) for room in rooms]
         self.database = database
+        self.source, self.active_engine = source, engine
         allowed = set(self.config.get('consented_databases', []))
         allowed.add(str(database))
         self.config.update(database=str(database), consented_databases=sorted(allowed))
         self.save()
-        return dict(rooms=self.rooms, database=str(database))
+        return dict(rooms=self.rooms, database=str(database), source=source)
 
     def revoke(self):
         self.database, self.rooms = None, []
@@ -281,7 +311,7 @@ class DesktopService:
 
     def export(self, room_id, destination, progress, resolve_speakers=False):
         if not self.database or not any(r['room_id'] == room_id for r in self.rooms):
-            raise UserError('choose_recording', '请从当前列表中选择一条面聊记录。', '请连接数据库后选择面聊记录。')
+            raise UserError('choose_recording', '请从当前列表中选择一条记录。', '请连接账号后选择记录。')
         folder = Path(destination).expanduser()
         if not str(destination).strip() or str(folder).startswith(('\\\\', '//')):
             raise UserError('output_folder', '请选择本地导出文件夹。', '请选择本地 NTFS 磁盘中可写入的文件夹。')
@@ -291,7 +321,7 @@ class DesktopService:
             pass
         began = time.perf_counter()
         options = {'resolve_speakers': True} if resolve_speakers else {}
-        title, result = self.engine.extract(self.database, self.profile_state(self.database), room_id, progress, **options)
+        title, result = self.active_engine.extract(self.database, self.profile_state(self.database), room_id, progress, **options)
         progress('正在保存 Markdown 和 JSON……')
         from native_support.local_io import atomic_output
         from native_transcript import render_markdown
@@ -310,6 +340,9 @@ class DesktopService:
         self.config['output_folder'] = str(folder)
         self.save()
         warnings = []
+        if result.get('source_kind') == 'meeting':
+            from native_meetings import WARNING
+            warnings.append(WARNING)
         if result.get('speaker_resolution', {}).get('status') == 'unavailable':
             warnings.append('本地通讯录暂时无法读取，已保留原成员编号。请确认企业微信仍已登录；复制或迁移过的数据可能缺少账号信息。')
         if result['missing_id_ranges']:

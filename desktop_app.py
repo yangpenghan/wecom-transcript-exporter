@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parent
 
 
 def choose_location(kind):
-    if kind not in ('database', 'search', 'output'):
+    if kind not in ('database', 'meeting-profile', 'search', 'output'):
         raise UserError('picker_kind', '无法识别所选位置类型。')
     from native_export import powershell
     # Fixed script only: no user path is interpolated into executable code.
@@ -33,7 +33,7 @@ $owner=New-Object System.Windows.Forms.Form
 $owner.TopMost=$true
 $owner.ShowInTaskbar=$false
 """
-    if kind == 'database':
+    if kind in ('database', 'meeting-profile'):
         script += """
 $dialog=New-Object System.Windows.Forms.OpenFileDialog
 $dialog.Title='选择企业微信面聊数据库'
@@ -42,6 +42,10 @@ $dialog.CheckFileExists=$true
 $result=$dialog.ShowDialog($owner)
 $selected=$dialog.FileName
 """
+        if kind == 'meeting-profile':
+            script = script.replace('选择企业微信面聊数据库', '选择企业微信账号资料').replace(
+                '企业微信面聊数据库（voice_room5.db）|voice_room5.db',
+                '企业微信账号资料（io_data.json）|io_data.json')
     else:
         script += """
 $dialog=New-Object System.Windows.Forms.FolderBrowserDialog
@@ -197,9 +201,9 @@ class LocalHandler(BaseHTTPRequestHandler):
             if path == '/api/heartbeat':
                 return self.send_json(200, {'alive': True})
             operations = {
-                '/api/discover': lambda p: service.discover(str(data.get('root', ''))),
+                '/api/discover': lambda p: service.discover(str(data.get('root', '')), source=str(data.get('source', 'facechat'))),
                 '/api/browse': lambda p: choose_location(data.get('kind')),
-                '/api/connect': lambda p: service.connect(str(data.get('path', '')), data.get('consent') is True, p),
+                '/api/connect': lambda p: service.connect(str(data.get('path', '')), data.get('consent') is True, p, source=str(data.get('source', 'facechat'))),
                 '/api/export': lambda p: service.export(str(data.get('room_id', '')), str(data.get('folder', '')), p, resolve_speakers=data.get('resolve_speakers') is True),
                 '/api/revoke': lambda p: service.revoke(),
             }

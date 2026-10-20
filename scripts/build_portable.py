@@ -9,7 +9,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 NAME = 'WeCom Transcript Exporter'
-VERSION = '1.3.0'
+VERSION = '1.4.0'
 
 
 def main():
@@ -30,7 +30,8 @@ def main():
     notices = package / 'licenses'
     notices.mkdir(exist_ok=True)
     shutil.copy2(ROOT / 'native_support/LICENSE.wecom-agent', notices / 'LICENSE.wecom-agent')
-    for name in ('cryptography', 'cffi', 'pycparser', 'pyinstaller'):
+    shutil.copy2(ROOT / 'dfindexeddb/LICENSE', notices / 'LICENSE.dfindexeddb')
+    for name in ('cryptography', 'cffi', 'pycparser', 'pyinstaller', 'python-snappy', 'cramjam', 'zstd', 'google-crc32c'):
         distribution = metadata.distribution(name)
         for relative in distribution.files or []:
             if any(part.lower() in ('licenses', 'license', 'copying.txt') for part in relative.parts):

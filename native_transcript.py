@@ -139,6 +139,8 @@ def render_markdown(title, result):
     records = result['records']
     lines = [f'# {title}', '', f'> 本机缓存原始转录 · {len(records)} 条 · UTC+08:00',
              '> 正文直接读取企业微信数据库，未使用 OCR 或重新转录。', '']
+    if result.get('source_kind') == 'meeting':
+        lines += ['> 会议原文来自本机缓存，尚未核对服务器端完整性；缓存可能过期或不完整。', '']
     if result['missing_id_ranges'] or not result['last_segment_ended']:
         lines += ['> 注意：缓存存在序号缺口，或尚未观察到最后一段结束标记；不能确认完整。', '']
     if result['unresolved_speakers']:

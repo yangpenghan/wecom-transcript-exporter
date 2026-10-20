@@ -53,3 +53,11 @@ The earlier foreground OCR/copy workflow required repeated scrolling and clipboa
 Run `python -m unittest discover -s tests -v` after installing the pinned dependencies. Tests create synthetic databases and payloads; they do not open WeCom, inspect a live process, or use private recordings.
 
 The initial real-recording check exported 347 utterances. Its first 346 matched the earlier copy-based result exactly; one additional utterance belonged to a resumed segment. The first export took 3.44 seconds and a repeat took 0.32 seconds on the development machine. These are measured examples, not performance guarantees. Real test recordings and reports are deliberately excluded from Git.
+
+## Meeting cache mode (v1.4)
+
+Profile identity selects exactly one account's `WXWorkCefCache/Local Storage/leveldb`. No face-chat database, contact database, browser authentication, or process-memory scan is needed. The manifest selects current tables and logs (including the previous log and later active logs); latest sequence numbers and tombstones select the current value, with an exact account/origin/key-prefix filter. No forensic recovery of obsolete entries.
+
+Snapshots are bounded to 512 files, 64 MiB per file and 128 MiB total, and checked with two matching byte reads. WAL/manifest fragments and CRC32C checksums, plus SST index/data block checksums, are validated before decoding. Uncompressed/Snappy blocks are limited to 16 MiB decompressed; other compression types fail closed. Temporary files are removed on exit or on the next startup for a dead owning process. Normal cache writes during capture may require refresh.
+
+Meeting JSON and Markdown always mark server completeness as unverified. No missing-sequence inference is applied to meeting content IDs. Multiple recording segments and repeated utterances are preserved in cache order. Unsupported payloads appear unavailable in the list; an unsupported selected entry cannot export partial text. UI source/account changes clear previous selections and results.

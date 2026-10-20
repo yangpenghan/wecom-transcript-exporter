@@ -1,0 +1,47 @@
+{
+  "source": "https://github.com/google/dfindexeddb",
+  "distribution": "dfindexeddb==20260210",
+  "scope": "Unmodified minimal LevelDB parser subset; no IndexedDB or CLI modules",
+  "files": [
+    {
+      "file": "__init__.py",
+      "sha256": "28f60bf7ffe5f2877afcec837c645381a27a8b2fdfa88819f9d4b64be7b745a7"
+    },
+    {
+      "file": "errors.py",
+      "sha256": "3cda70c9ffe5acf7384c4efba006a45f79aee43fd870fddff34c2af18d4b92f6"
+    },
+    {
+      "file": "utils.py",
+      "sha256": "81ea78de6dcba4064d9d6e8914e4130e7f0c46b117cc695cd4d679c8cb81b2f2"
+    },
+    {
+      "file": "leveldb/__init__.py",
+      "sha256": "28f60bf7ffe5f2877afcec837c645381a27a8b2fdfa88819f9d4b64be7b745a7"
+    },
+    {
+      "file": "leveldb/definitions.py",
+      "sha256": "72fc0edc191b121e484a53f394cfd32f6c6cfb5951caa7a98b2cbbfd967cfbf0"
+    },
+    {
+      "file": "leveldb/descriptor.py",
+      "sha256": "0a6cbdcbbddc05e6f9f3aa6bca86a0674f996f6880ffc302446bba48de5d29ba"
+    },
+    {
+      "file": "leveldb/ldb.py",
+      "sha256": "eec8e9a8c5eb53a897cf9778180c79f01b84927a633ccdea96bccdbfa8dd2c89"
+    },
+    {
+      "file": "leveldb/log.py",
+      "sha256": "a023292c7f124ce48ad2a33ebb8e309dfefcd5e872e7e24f7b57bfa2c32580be"
+    },
+    {
+      "file": "leveldb/record.py",
+      "sha256": "167cfb8b8e3a20edc88c9640941f6894cfd54a211a33638d1f31bb06aac1cda9"
+    },
+    {
+      "file": "leveldb/utils.py",
+      "sha256": "365e094ffae74199c703a00f84cfdcf2d3d2f54e91d8400ce0ac677256d1a938"
+    }
+  ]
+}

@@ -13,7 +13,7 @@ import tempfile
 from native_transcript import decode_fields, _single
 
 
-def contact_database(database):
+def account_directory(database):
     database = Path(database).resolve(strict=True)
     profile = database.parent
     if profile.parent.name.casefold() != 'profiles':
@@ -33,6 +33,14 @@ def contact_database(database):
     if not isinstance(uid, int) or not 0 < uid <= 2**63 - 1:
         raise ValueError('Invalid profile identity')
     account = profile.parent.parent / str(uid)
+    resolved = account.resolve(strict=True)
+    if resolved != account or not resolved.is_dir():
+        raise ValueError('Account location is redirected or missing')
+    return resolved
+
+
+def contact_database(database):
+    account = account_directory(database)
     contact = (account / 'Data/user.db').resolve(strict=True)
     if not contact.is_relative_to(account) or not contact.is_file():
         raise ValueError('Contacts are outside the selected account')

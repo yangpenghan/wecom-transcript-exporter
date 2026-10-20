@@ -1,5 +1,14 @@
 # Verification history
 
+## v1.4.0 — Local meeting transcripts
+
+Tested on 2026-10-20. All 62 Python tests completed: 61 passed and one POSIX-only test was skipped. New tests cover exact account/key isolation, latest values and tombstones, meeting-only profiles, repeated utterances and multi-segment timestamps, malformed/empty payloads, stable snapshot cleanup, previous-log inclusion, CRC corruption, incomplete fragments and decompression size limits. Independent review confirmed the integrity and discovery fixes.
+
+Both synthetic browser journeys passed: existing face-chat behavior and the new source selector, account discovery, safe plaintext preview, unavailable/empty/error states, completeness warning and mobile layout. The 390px meeting view was visually inspected.
+
+The built v1.4.0 executable exported the approved real meeting through its browser UI: 253 passages, all text/speakers/offsets/content IDs matched the previously verified local cache export, and export took 0.301 seconds. Switching to face-chat mode exported 347 passages with four resolved names. There were zero external browser requests, and Exit stopped the app. Meeting server completeness remains unverified. No private title, meeting identifiers, names or content are included in this verification document.
+
+
 ## v1.3.0 — Optional local speaker names
 
 The selected recording's four unresolved member IDs each matched exactly one name in the current account's local contact cache. The production service exported all 347 passages with those names; every non-speaker record field and each existing native name stayed unchanged. Initial contact access plus export took 10.271 seconds in this test; later checks reuse the protected contact key. Names, IDs, contact data and the verified private export remain outside Git.
